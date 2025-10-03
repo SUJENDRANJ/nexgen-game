@@ -1,18 +1,28 @@
 import { useState } from 'react';
 
 export default function Login({ onLogin }) {
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setLoading(true);
 
     try {
-      await onLogin(email, password);
+      await onLogin(email, password, isSignUp, name);
+      if (isSignUp) {
+        setSuccess('Account created successfully! You can now sign in.');
+        setIsSignUp(false);
+        setName('');
+        setPassword('');
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -24,9 +34,22 @@ export default function Login({ onLogin }) {
     <div style={styles.container}>
       <div style={styles.card}>
         <h1 style={styles.title}>Office Gamification</h1>
-        <p style={styles.subtitle}>Sign in to your account</p>
+        <p style={styles.subtitle}>{isSignUp ? 'Create your account' : 'Sign in to your account'}</p>
 
         <form onSubmit={handleSubmit} style={styles.form}>
+          {isSignUp && (
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                style={styles.input}
+                placeholder="Your full name"
+              />
+            </div>
+          )}
           <div style={styles.inputGroup}>
             <label style={styles.label}>Email</label>
             <input
@@ -52,17 +75,37 @@ export default function Login({ onLogin }) {
           </div>
 
           {error && <div style={styles.error}>{error}</div>}
+          {success && <div style={styles.success}>{success}</div>}
 
           <button type="submit" disabled={loading} style={styles.button}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? (isSignUp ? 'Creating account...' : 'Signing in...') : (isSignUp ? 'Sign Up' : 'Sign In')}
           </button>
         </form>
 
-        <div style={styles.demo}>
-          <p style={styles.demoTitle}>Demo Accounts:</p>
-          <p style={styles.demoText}>Admin: admin@company.com / admin123</p>
-          <p style={styles.demoText}>Employee: john@company.com / pass123</p>
+        <div style={styles.toggle}>
+          <p style={styles.toggleText}>
+            {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+            {' '}
+            <button
+              type="button"
+              onClick={() => {
+                setIsSignUp(!isSignUp);
+                setError('');
+                setSuccess('');
+              }}
+              style={styles.toggleButton}
+            >
+              {isSignUp ? 'Sign In' : 'Sign Up'}
+            </button>
+          </p>
         </div>
+
+        {!isSignUp && (
+          <div style={styles.demo}>
+            <p style={styles.demoTitle}>Demo Accounts:</p>
+            <p style={styles.demoText}>Create a new account or use existing credentials if you have them</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -138,6 +181,30 @@ const styles = {
     color: '#c53030',
     borderRadius: '8px',
     fontSize: '14px',
+  },
+  success: {
+    padding: '12px',
+    backgroundColor: '#c6f6d5',
+    color: '#22543d',
+    borderRadius: '8px',
+    fontSize: '14px',
+  },
+  toggle: {
+    marginTop: '16px',
+    textAlign: 'center',
+  },
+  toggleText: {
+    color: '#4a5568',
+    fontSize: '14px',
+  },
+  toggleButton: {
+    background: 'none',
+    border: 'none',
+    color: '#667eea',
+    fontWeight: '600',
+    cursor: 'pointer',
+    fontSize: '14px',
+    textDecoration: 'underline',
   },
   demo: {
     marginTop: '24px',
