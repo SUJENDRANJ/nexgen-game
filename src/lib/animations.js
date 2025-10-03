@@ -101,3 +101,7 @@ export const bounceAnimation = {
 export const shakeAnimation = {
   animation: 'shake 0.5s ease',
 };
+
+export const slideIn = {
+  animation: 'slideIn 0.3s ease-out',
+};

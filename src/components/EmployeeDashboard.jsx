@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { createConfetti, createSparkles } from '../lib/animations';
+import EmployeeRules from './EmployeeRules';
+import Leaderboard from './Leaderboard';
 
 export default function EmployeeDashboard({ user, onLogout }) {
+  const [activeTab, setActiveTab] = useState('overview');
   const [rewards, setRewards] = useState([]);
   const [myRequests, setMyRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -133,6 +136,51 @@ export default function EmployeeDashboard({ user, onLogout }) {
         </button>
       </div>
 
+      <div style={styles.tabsContainer}>
+        <button
+          onClick={() => setActiveTab('overview')}
+          style={{
+            ...styles.tabButton,
+            ...(activeTab === 'overview' ? styles.tabButtonActive : {}),
+          }}
+        >
+          🎮 Dashboard
+        </button>
+        <button
+          onClick={() => setActiveTab('rules')}
+          style={{
+            ...styles.tabButton,
+            ...(activeTab === 'rules' ? styles.tabButtonActive : {}),
+          }}
+        >
+          📄 Rules
+        </button>
+        <button
+          onClick={() => setActiveTab('leaderboard')}
+          style={{
+            ...styles.tabButton,
+            ...(activeTab === 'leaderboard' ? styles.tabButtonActive : {}),
+          }}
+        >
+          🏆 Leaderboard
+        </button>
+      </div>
+
+      {activeTab === 'rules' && (
+        <div style={styles.tabContent}>
+          <EmployeeRules />
+        </div>
+      )}
+
+      {activeTab === 'leaderboard' && (
+        <div style={styles.tabContent}>
+          <Leaderboard currentUserId={user.id} />
+        </div>
+      )}
+
+      {activeTab === 'overview' && (
+        <div style={styles.tabContent}>
+
       <div style={styles.topSection}>
         <div style={styles.levelCard}>
           <div style={styles.levelBadge} data-level-badge>
@@ -234,39 +282,6 @@ export default function EmployeeDashboard({ user, onLogout }) {
       </div>
 
       <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>🏆 Leaderboard</h2>
-        <div style={styles.leaderboardCard}>
-          {leaderboard.map((player, index) => (
-            <div
-              key={player.id}
-              style={{
-                ...styles.leaderboardItem,
-                ...(player.id === currentUser.id ? styles.leaderboardItemHighlight : {}),
-              }}
-            >
-              <div style={styles.leaderboardLeft}>
-                <span
-                  style={{
-                    ...styles.leaderboardRank,
-                    ...(index < 3 ? styles[`rank${index + 1}`] : {}),
-                  }}
-                >
-                  {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
-                </span>
-                <span style={styles.leaderboardName}>
-                  {player.name}
-                  {player.id === currentUser.id && (
-                    <span style={styles.youBadge}>(You)</span>
-                  )}
-                </span>
-              </div>
-              <span style={styles.leaderboardPoints}>⭐ {player.points}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div style={styles.section}>
         <h2 style={styles.sectionTitle}>📋 My Requests</h2>
         <div style={styles.requestsList}>
           {myRequests.length === 0 ? (
@@ -299,6 +314,8 @@ export default function EmployeeDashboard({ user, onLogout }) {
           )}
         </div>
       </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -308,6 +325,35 @@ const styles = {
     minHeight: '100vh',
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     padding: '24px',
+  },
+  tabsContainer: {
+    display: 'flex',
+    gap: '12px',
+    marginBottom: '24px',
+    borderBottom: '2px solid rgba(255,255,255,0.2)',
+    paddingBottom: '12px',
+  },
+  tabButton: {
+    padding: '12px 24px',
+    background: 'rgba(255,255,255,0.1)',
+    color: 'rgba(255,255,255,0.7)',
+    border: 'none',
+    borderRadius: '12px 12px 0 0',
+    fontSize: '16px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+  },
+  tabButtonActive: {
+    background: 'rgba(255,255,255,0.95)',
+    color: '#667eea',
+    boxShadow: '0 -4px 12px rgba(0,0,0,0.1)',
+  },
+  tabContent: {
+    background: 'rgba(255,255,255,0.95)',
+    padding: '24px',
+    borderRadius: '16px',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
   },
   loading: {
     display: 'flex',

@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { createConfetti, createSparkles } from '../lib/animations';
+import AdminRules from './AdminRules';
+import Leaderboard from './Leaderboard';
 
 export default function AdminDashboard({ user, onLogout }) {
+  const [activeTab, setActiveTab] = useState('overview');
   const [employees, setEmployees] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -139,6 +142,51 @@ export default function AdminDashboard({ user, onLogout }) {
           Logout
         </button>
       </div>
+
+      <div style={styles.tabsContainer}>
+        <button
+          onClick={() => setActiveTab('overview')}
+          style={{
+            ...styles.tabButton,
+            ...(activeTab === 'overview' ? styles.tabButtonActive : {}),
+          }}
+        >
+          📊 Overview
+        </button>
+        <button
+          onClick={() => setActiveTab('rules')}
+          style={{
+            ...styles.tabButton,
+            ...(activeTab === 'rules' ? styles.tabButtonActive : {}),
+          }}
+        >
+          📋 Manage Rules
+        </button>
+        <button
+          onClick={() => setActiveTab('leaderboard')}
+          style={{
+            ...styles.tabButton,
+            ...(activeTab === 'leaderboard' ? styles.tabButtonActive : {}),
+          }}
+        >
+          🏆 Leaderboard
+        </button>
+      </div>
+
+      {activeTab === 'rules' && (
+        <div style={styles.tabContent}>
+          <AdminRules user={user} />
+        </div>
+      )}
+
+      {activeTab === 'leaderboard' && (
+        <div style={styles.tabContent}>
+          <Leaderboard currentUserId={user.id} />
+        </div>
+      )}
+
+      {activeTab === 'overview' && (
+        <div style={styles.tabContent}>
 
       <div style={styles.statsGrid}>
         <div style={styles.statCard}>
@@ -279,6 +327,8 @@ export default function AdminDashboard({ user, onLogout }) {
           ))}
         </div>
       </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -288,6 +338,35 @@ const styles = {
     minHeight: '100vh',
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     padding: '24px',
+  },
+  tabsContainer: {
+    display: 'flex',
+    gap: '12px',
+    marginBottom: '24px',
+    borderBottom: '2px solid rgba(255,255,255,0.2)',
+    paddingBottom: '12px',
+  },
+  tabButton: {
+    padding: '12px 24px',
+    background: 'rgba(255,255,255,0.1)',
+    color: 'rgba(255,255,255,0.7)',
+    border: 'none',
+    borderRadius: '12px 12px 0 0',
+    fontSize: '16px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+  },
+  tabButtonActive: {
+    background: 'rgba(255,255,255,0.95)',
+    color: '#667eea',
+    boxShadow: '0 -4px 12px rgba(0,0,0,0.1)',
+  },
+  tabContent: {
+    background: 'rgba(255,255,255,0.95)',
+    padding: '24px',
+    borderRadius: '16px',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
   },
   loading: {
     display: 'flex',
