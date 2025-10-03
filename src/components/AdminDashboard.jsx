@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { createConfetti, createSparkles } from '../lib/animations';
 
 export default function AdminDashboard({ user, onLogout }) {
   const [employees, setEmployees] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [pointsToAdd, setPointsToAdd] = useState('');
+  const [quickAwardPoints, setQuickAwardPoints] = useState({});
 
   useEffect(() => {
     loadData();
@@ -20,7 +20,7 @@ export default function AdminDashboard({ user, onLogout }) {
           .from('users')
           .select('*')
           .eq('role', 'employee')
-          .order('name', { ascending: true }),
+          .order('points', { ascending: false }),
         supabase
           .from('reward_requests')
           .select('*, users(name, email), rewards(name, cost)')
@@ -37,7 +37,7 @@ export default function AdminDashboard({ user, onLogout }) {
     }
   };
 
-  const handleApproveRequest = async (request) => {
+  const handleApproveRequest = async (request, buttonRef) => {
     try {
       const employee = employees.find((e) => e.id === request.employee_id);
 
@@ -62,6 +62,10 @@ export default function AdminDashboard({ user, onLogout }) {
       if (updateRequest.error) throw updateRequest.error;
       if (updateUser.error) throw updateUser.error;
 
+      if (buttonRef) {
+        createSparkles(buttonRef);
+      }
+
       alert('Request approved successfully!');
       loadData();
     } catch (error) {
@@ -85,132 +89,192 @@ export default function AdminDashboard({ user, onLogout }) {
     }
   };
 
-  const handleAwardPoints = async () => {
-    if (!selectedEmployee || !pointsToAdd || pointsToAdd <= 0) {
-      alert('Please select an employee and enter valid points');
-      return;
-    }
+  const handleQuickAward = async (employeeId, points, buttonRef) => {
+    if (!points || points <= 0) return;
 
     try {
-      const employee = employees.find((e) => e.id === selectedEmployee);
-      const newPoints = employee.points + parseInt(pointsToAdd);
+      const employee = employees.find((e) => e.id === employeeId);
+      const newPoints = employee.points + parseInt(points);
 
       const { error } = await supabase
         .from('users')
         .update({ points: newPoints })
-        .eq('id', selectedEmployee);
+        .eq('id', employeeId);
 
       if (error) throw error;
 
-      alert(`Successfully awarded ${pointsToAdd} points!`);
-      setSelectedEmployee(null);
-      setPointsToAdd('');
+      if (buttonRef) {
+        createConfetti(document.body);
+        createSparkles(buttonRef);
+      }
+
+      setQuickAwardPoints((prev) => ({ ...prev, [employeeId]: '' }));
       loadData();
     } catch (error) {
       alert('Error awarding points: ' + error.message);
     }
   };
 
+  const quickAwardButtons = [
+    { label: '+10', value: 10, color: '#4CAF50', icon: '⭐' },
+    { label: '+25', value: 25, color: '#2196F3', icon: '✨' },
+    { label: '+50', value: 50, color: '#FF9800', icon: '🌟' },
+    { label: '+100', value: 100, color: '#E91E63', icon: '💎' },
+  ];
+
   if (loading) {
-    return <div style={styles.loading}>Loading...</div>;
+    return (
+      <div style={styles.loading}>
+        <div style={styles.spinner}>⏳</div>
+        <p>Loading admin panel...</p>
+      </div>
+    );
   }
 
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h1 style={styles.title}>Admin Dashboard</h1>
+        <h1 style={styles.title}>👑 Admin Control Center</h1>
         <button onClick={onLogout} style={styles.logoutButton}>
           Logout
         </button>
       </div>
 
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Award Points</h2>
-        <div style={styles.awardCard}>
-          <div style={styles.awardForm}>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Select Employee</label>
-              <select
-                value={selectedEmployee || ''}
-                onChange={(e) => setSelectedEmployee(e.target.value)}
-                style={styles.select}
-              >
-                <option value="">Choose employee...</option>
-                {employees.map((emp) => (
-                  <option key={emp.id} value={emp.id}>
-                    {emp.name} ({emp.points} pts)
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Points to Award</label>
-              <input
-                type="number"
-                value={pointsToAdd}
-                onChange={(e) => setPointsToAdd(e.target.value)}
-                min="1"
-                style={styles.input}
-                placeholder="Enter points"
-              />
-            </div>
-
-            <button onClick={handleAwardPoints} style={styles.awardButton}>
-              Award Points
-            </button>
+      <div style={styles.statsGrid}>
+        <div style={styles.statCard}>
+          <div style={styles.statIcon}>👥</div>
+          <div>
+            <p style={styles.statLabel}>Total Employees</p>
+            <h3 style={styles.statValue}>{employees.length}</h3>
+          </div>
+        </div>
+        <div style={{ ...styles.statCard, background: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)' }}>
+          <div style={styles.statIcon}>⏳</div>
+          <div>
+            <p style={styles.statLabel}>Pending Requests</p>
+            <h3 style={styles.statValue}>{pendingRequests.length}</h3>
+          </div>
+        </div>
+        <div style={{ ...styles.statCard, background: 'linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%)' }}>
+          <div style={styles.statIcon}>⭐</div>
+          <div>
+            <p style={styles.statLabel}>Total Points Awarded</p>
+            <h3 style={styles.statValue}>{employees.reduce((sum, e) => sum + e.points, 0)}</h3>
           </div>
         </div>
       </div>
 
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>
-          Pending Requests ({pendingRequests.length})
-        </h2>
-        <div style={styles.requestsList}>
-          {pendingRequests.length === 0 ? (
-            <p style={styles.emptyText}>No pending requests</p>
-          ) : (
-            pendingRequests.map((request) => (
+      {pendingRequests.length > 0 && (
+        <div style={styles.section}>
+          <h2 style={styles.sectionTitle}>
+            🔔 Pending Requests
+            <span style={styles.badge}>{pendingRequests.length}</span>
+          </h2>
+          <div style={styles.requestsList}>
+            {pendingRequests.map((request) => (
               <div key={request.id} style={styles.requestCard}>
-                <div style={styles.requestInfo}>
-                  <h3 style={styles.requestReward}>{request.rewards.name}</h3>
-                  <p style={styles.requestEmployee}>
-                    Requested by: {request.users.name}
-                  </p>
-                  <p style={styles.requestCost}>Cost: {request.rewards.cost} points</p>
-                  <p style={styles.requestDate}>
-                    {new Date(request.created_at).toLocaleString()}
-                  </p>
+                <div style={styles.requestLeft}>
+                  <div style={styles.requestIcon}>🎁</div>
+                  <div>
+                    <h3 style={styles.requestReward}>{request.rewards.name}</h3>
+                    <p style={styles.requestEmployee}>
+                      <strong>{request.users.name}</strong>
+                    </p>
+                    <p style={styles.requestCost}>⭐ {request.rewards.cost} points</p>
+                    <p style={styles.requestDate}>
+                      {new Date(request.created_at).toLocaleString()}
+                    </p>
+                  </div>
                 </div>
                 <div style={styles.requestActions}>
                   <button
-                    onClick={() => handleApproveRequest(request)}
+                    onClick={(e) => handleApproveRequest(request, e.currentTarget)}
                     style={styles.approveButton}
                   >
-                    Approve
+                    ✅ Approve
                   </button>
                   <button
                     onClick={() => handleRejectRequest(request.id)}
                     style={styles.rejectButton}
                   >
-                    Reject
+                    ❌ Reject
                   </button>
                 </div>
               </div>
-            ))
-          )}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>All Employees</h2>
+        <h2 style={styles.sectionTitle}>🏆 Employee Leaderboard</h2>
         <div style={styles.employeesGrid}>
-          {employees.map((emp) => (
-            <div key={emp.id} style={styles.employeeCard}>
-              <h3 style={styles.employeeName}>{emp.name}</h3>
-              <p style={styles.employeeEmail}>{emp.email}</p>
-              <p style={styles.employeePoints}>{emp.points} points</p>
+          {employees.map((emp, index) => (
+            <div
+              key={emp.id}
+              style={{
+                ...styles.employeeCard,
+                ...(index < 3 ? { borderTop: `4px solid ${['#FFD700', '#C0C0C0', '#CD7F32'][index]}` } : {}),
+              }}
+            >
+              <div style={styles.employeeHeader}>
+                <div style={styles.employeeRank}>
+                  {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
+                </div>
+                <div style={styles.employeeInfo}>
+                  <h3 style={styles.employeeName}>{emp.name}</h3>
+                  <p style={styles.employeeEmail}>{emp.email}</p>
+                </div>
+              </div>
+              <div style={styles.employeePoints}>
+                <span style={styles.pointsLabel}>⭐ {emp.points}</span>
+                <span style={styles.pointsText}>points</span>
+              </div>
+              <div style={styles.quickAwardSection}>
+                <p style={styles.quickAwardLabel}>Quick Award:</p>
+                <div style={styles.quickAwardButtons}>
+                  {quickAwardButtons.map((btn) => (
+                    <button
+                      key={btn.value}
+                      onClick={(e) => handleQuickAward(emp.id, btn.value, e.currentTarget)}
+                      style={{
+                        ...styles.quickAwardBtn,
+                        backgroundColor: btn.color,
+                      }}
+                      title={`Award ${btn.value} points`}
+                    >
+                      {btn.icon} {btn.label}
+                    </button>
+                  ))}
+                </div>
+                <div style={styles.customAwardSection}>
+                  <input
+                    type="number"
+                    value={quickAwardPoints[emp.id] || ''}
+                    onChange={(e) =>
+                      setQuickAwardPoints((prev) => ({
+                        ...prev,
+                        [emp.id]: e.target.value,
+                      }))
+                    }
+                    placeholder="Custom"
+                    min="1"
+                    style={styles.customInput}
+                  />
+                  <button
+                    onClick={(e) =>
+                      handleQuickAward(emp.id, quickAwardPoints[emp.id], e.currentTarget)
+                    }
+                    disabled={!quickAwardPoints[emp.id] || quickAwardPoints[emp.id] <= 0}
+                    style={{
+                      ...styles.customAwardBtn,
+                      ...((!quickAwardPoints[emp.id] || quickAwardPoints[emp.id] <= 0) && styles.disabledBtn),
+                    }}
+                  >
+                    🎯 Award
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -222,16 +286,22 @@ export default function AdminDashboard({ user, onLogout }) {
 const styles = {
   container: {
     minHeight: '100vh',
-    backgroundColor: '#f7fafc',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     padding: '24px',
   },
   loading: {
     display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: '100vh',
     fontSize: '18px',
-    color: '#4a5568',
+    color: '#fff',
+    gap: '16px',
+  },
+  spinner: {
+    fontSize: '48px',
+    animation: 'spin 2s linear infinite',
   },
   header: {
     display: 'flex',
@@ -240,74 +310,76 @@ const styles = {
     marginBottom: '32px',
   },
   title: {
-    fontSize: '32px',
-    fontWeight: '700',
-    color: '#1a202c',
+    fontSize: '36px',
+    fontWeight: '800',
+    color: '#fff',
+    textShadow: '2px 2px 4px rgba(0,0,0,0.2)',
   },
   logoutButton: {
-    padding: '10px 20px',
-    backgroundColor: '#e53e3e',
+    padding: '12px 24px',
+    background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
     color: 'white',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '12px',
     fontSize: '14px',
-    fontWeight: '600',
+    fontWeight: '700',
     cursor: 'pointer',
+    boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+    transition: 'all 0.3s ease',
+  },
+  statsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    gap: '20px',
+    marginBottom: '32px',
+  },
+  statCard: {
+    background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+    padding: '24px',
+    borderRadius: '20px',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '20px',
+  },
+  statIcon: {
+    fontSize: '48px',
+    filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))',
+  },
+  statLabel: {
+    fontSize: '14px',
+    color: '#fff',
+    fontWeight: '600',
+    opacity: 0.9,
+    marginBottom: '4px',
+  },
+  statValue: {
+    fontSize: '36px',
+    fontWeight: '900',
+    color: '#fff',
+    textShadow: '2px 2px 4px rgba(0,0,0,0.2)',
   },
   section: {
     marginBottom: '32px',
   },
   sectionTitle: {
-    fontSize: '24px',
-    fontWeight: '600',
-    color: '#2d3748',
-    marginBottom: '16px',
-  },
-  awardCard: {
-    backgroundColor: 'white',
-    padding: '24px',
-    borderRadius: '12px',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-  },
-  awardForm: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr auto',
-    gap: '16px',
-    alignItems: 'end',
-  },
-  inputGroup: {
+    fontSize: '28px',
+    fontWeight: '800',
+    color: '#fff',
+    marginBottom: '20px',
+    textShadow: '2px 2px 4px rgba(0,0,0,0.2)',
     display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
+    alignItems: 'center',
+    gap: '12px',
   },
-  label: {
-    fontSize: '14px',
-    fontWeight: '500',
-    color: '#2d3748',
-  },
-  select: {
-    padding: '12px',
-    border: '1px solid #e2e8f0',
-    borderRadius: '8px',
-    fontSize: '14px',
-    backgroundColor: 'white',
-  },
-  input: {
-    padding: '12px',
-    border: '1px solid #e2e8f0',
-    borderRadius: '8px',
-    fontSize: '14px',
-  },
-  awardButton: {
-    padding: '12px 24px',
-    backgroundColor: '#48bb78',
-    color: 'white',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '14px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    height: 'fit-content',
+  badge: {
+    backgroundColor: '#FF6B6B',
+    color: '#fff',
+    padding: '6px 12px',
+    borderRadius: '12px',
+    fontSize: '18px',
+    fontWeight: '700',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
   },
   requestsList: {
     display: 'flex',
@@ -315,36 +387,45 @@ const styles = {
     gap: '16px',
   },
   requestCard: {
-    backgroundColor: 'white',
-    padding: '20px',
-    borderRadius: '12px',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+    backgroundColor: '#fff',
+    padding: '24px',
+    borderRadius: '16px',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: '20px',
+    flexWrap: 'wrap',
+    transition: 'transform 0.2s ease',
   },
-  requestInfo: {
+  requestLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '20px',
     flex: 1,
   },
+  requestIcon: {
+    fontSize: '48px',
+  },
   requestReward: {
-    fontSize: '18px',
-    fontWeight: '600',
+    fontSize: '20px',
+    fontWeight: '700',
     color: '#2d3748',
-    marginBottom: '8px',
+    marginBottom: '4px',
   },
   requestEmployee: {
-    fontSize: '14px',
+    fontSize: '16px',
     color: '#4a5568',
     marginBottom: '4px',
   },
   requestCost: {
-    fontSize: '14px',
+    fontSize: '16px',
     color: '#667eea',
-    fontWeight: '600',
+    fontWeight: '700',
     marginBottom: '4px',
   },
   requestDate: {
-    fontSize: '12px',
+    fontSize: '13px',
     color: '#a0aec0',
   },
   requestActions: {
@@ -352,57 +433,144 @@ const styles = {
     gap: '12px',
   },
   approveButton: {
-    padding: '10px 20px',
-    backgroundColor: '#48bb78',
+    padding: '12px 24px',
+    background: 'linear-gradient(135deg, #66BB6A 0%, #43A047 100%)',
     color: 'white',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '12px',
     fontSize: '14px',
-    fontWeight: '600',
+    fontWeight: '700',
     cursor: 'pointer',
+    boxShadow: '0 4px 15px rgba(102, 187, 106, 0.4)',
+    transition: 'all 0.3s ease',
+    whiteSpace: 'nowrap',
   },
   rejectButton: {
-    padding: '10px 20px',
-    backgroundColor: '#e53e3e',
+    padding: '12px 24px',
+    background: 'linear-gradient(135deg, #EF5350 0%, #E53935 100%)',
     color: 'white',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '12px',
     fontSize: '14px',
-    fontWeight: '600',
+    fontWeight: '700',
     cursor: 'pointer',
+    boxShadow: '0 4px 15px rgba(239, 83, 80, 0.4)',
+    transition: 'all 0.3s ease',
+    whiteSpace: 'nowrap',
   },
   employeesGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-    gap: '16px',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+    gap: '20px',
   },
   employeeCard: {
-    backgroundColor: 'white',
-    padding: '20px',
-    borderRadius: '12px',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+    backgroundColor: '#fff',
+    padding: '24px',
+    borderRadius: '16px',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+    transition: 'transform 0.2s ease',
+  },
+  employeeHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    marginBottom: '16px',
+  },
+  employeeRank: {
+    fontSize: '32px',
+    fontWeight: '800',
+    minWidth: '50px',
+    textAlign: 'center',
+  },
+  employeeInfo: {
+    flex: 1,
   },
   employeeName: {
-    fontSize: '18px',
-    fontWeight: '600',
+    fontSize: '20px',
+    fontWeight: '700',
     color: '#2d3748',
-    marginBottom: '8px',
+    marginBottom: '4px',
   },
   employeeEmail: {
     fontSize: '14px',
     color: '#718096',
-    marginBottom: '8px',
   },
   employeePoints: {
-    fontSize: '16px',
-    fontWeight: '600',
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: '8px',
+    marginBottom: '20px',
+    padding: '12px',
+    backgroundColor: '#F7FAFC',
+    borderRadius: '12px',
+  },
+  pointsLabel: {
+    fontSize: '28px',
+    fontWeight: '800',
     color: '#667eea',
   },
-  emptyText: {
+  pointsText: {
+    fontSize: '14px',
+    color: '#718096',
+    fontWeight: '600',
+  },
+  quickAwardSection: {
+    borderTop: '2px solid #E2E8F0',
+    paddingTop: '16px',
+  },
+  quickAwardLabel: {
+    fontSize: '14px',
+    fontWeight: '700',
+    color: '#4a5568',
+    marginBottom: '12px',
+  },
+  quickAwardButtons: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: '8px',
+    marginBottom: '12px',
+  },
+  quickAwardBtn: {
+    padding: '10px',
+    color: 'white',
+    border: 'none',
+    borderRadius: '10px',
+    fontSize: '13px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+    transition: 'all 0.3s ease',
+    whiteSpace: 'nowrap',
+  },
+  customAwardSection: {
+    display: 'flex',
+    gap: '8px',
+  },
+  customInput: {
+    flex: 1,
+    padding: '10px',
+    border: '2px solid #E2E8F0',
+    borderRadius: '10px',
+    fontSize: '14px',
+    fontWeight: '600',
     textAlign: 'center',
-    color: '#a0aec0',
-    padding: '40px',
-    backgroundColor: 'white',
-    borderRadius: '12px',
+  },
+  customAwardBtn: {
+    padding: '10px 16px',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '10px',
+    fontSize: '13px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+    transition: 'all 0.3s ease',
+    whiteSpace: 'nowrap',
+  },
+  disabledBtn: {
+    background: '#CBD5E0',
+    cursor: 'not-allowed',
+    boxShadow: 'none',
   },
 };
