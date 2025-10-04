@@ -10,6 +10,7 @@ export default function AdminDashboard({ user, onLogout }) {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [quickAwardPoints, setQuickAwardPoints] = useState({});
+  const [totalUsers, setTotalUsers] = useState(0);
 
   useEffect(() => {
     loadData();
@@ -18,7 +19,7 @@ export default function AdminDashboard({ user, onLogout }) {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [employeesRes, requestsRes] = await Promise.all([
+      const [employeesRes, requestsRes, allUsersRes] = await Promise.all([
         supabase
           .from('users')
           .select('*')
@@ -29,10 +30,14 @@ export default function AdminDashboard({ user, onLogout }) {
           .select('*, users(name, email), rewards(name, cost)')
           .eq('status', 'pending')
           .order('created_at', { ascending: false }),
+        supabase
+          .from('users')
+          .select('*', { count: 'exact' })
       ]);
 
       if (employeesRes.data) setEmployees(employeesRes.data);
       if (requestsRes.data) setPendingRequests(requestsRes.data);
+      if (allUsersRes.count !== null) setTotalUsers(allUsersRes.count);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -215,8 +220,8 @@ export default function AdminDashboard({ user, onLogout }) {
         <div style={styles.statCard}>
           <div style={styles.statIcon}>👥</div>
           <div>
-            <p style={styles.statLabel}>Total Employees</p>
-            <h3 style={styles.statValue}>{employees.length}</h3>
+            <p style={styles.statLabel}>Total Users</p>
+            <h3 style={styles.statValue}>{totalUsers}</h3>
           </div>
         </div>
         <div style={{ ...styles.statCard, background: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)' }}>

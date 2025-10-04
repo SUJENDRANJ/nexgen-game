@@ -17,7 +17,6 @@ export default function Leaderboard({ currentUserId }) {
       const { data, error } = await supabase
         .from('users')
         .select('id, name, email, points, role')
-        .eq('role', 'employee')
         .order('points', { ascending: false });
 
       if (error) throw error;

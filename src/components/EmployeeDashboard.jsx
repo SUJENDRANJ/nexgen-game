@@ -30,7 +30,6 @@ export default function EmployeeDashboard({ user, onLogout }) {
         supabase
           .from('users')
           .select('*')
-          .eq('role', 'employee')
           .order('points', { ascending: false })
           .limit(10),
       ]);
