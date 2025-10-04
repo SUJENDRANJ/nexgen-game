@@ -39,6 +39,7 @@ export default function App() {
   const handleAuth = async (email, password, isSignUp, name) => {
     if (isSignUp) {
       const { profile } = await signUp(email, password, name);
+      setUser(profile);
       return profile;
     } else {
       const { profile } = await signIn(email, password);
