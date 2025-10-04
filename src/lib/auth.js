@@ -39,13 +39,30 @@ export const signIn = async (email, password) => {
 
   if (authError) throw authError;
 
-  const { data: profile, error: profileError } = await supabase
+  let { data: profile, error: profileError } = await supabase
     .from('users')
     .select('*')
     .eq('user_id', authData.user.id)
     .maybeSingle();
 
   if (profileError) throw profileError;
+
+  if (!profile) {
+    const { data: newProfile, error: insertError } = await supabase
+      .from('users')
+      .insert({
+        user_id: authData.user.id,
+        email: authData.user.email,
+        name: authData.user.user_metadata?.name || email.split('@')[0],
+        role: 'employee',
+        points: 0,
+      })
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
+    profile = newProfile;
+  }
 
   return { user: authData.user, profile };
 };

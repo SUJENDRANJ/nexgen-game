@@ -93,11 +93,12 @@ export default function AdminDashboard({ user, onLogout }) {
   };
 
   const handleQuickAward = async (employeeId, points, buttonRef) => {
-    if (!points || points <= 0) return;
+    if (!points || points === '' || points === 0) return;
 
     try {
       const employee = employees.find((e) => e.id === employeeId);
-      const newPoints = employee.points + parseInt(points);
+      const pointsToAdd = parseInt(points);
+      const newPoints = Math.max(0, employee.points + pointsToAdd);
 
       const { error } = await supabase
         .from('users')
@@ -106,7 +107,7 @@ export default function AdminDashboard({ user, onLogout }) {
 
       if (error) throw error;
 
-      if (buttonRef) {
+      if (buttonRef && pointsToAdd > 0) {
         createConfetti(document.body);
         createSparkles(buttonRef);
       }
@@ -114,7 +115,27 @@ export default function AdminDashboard({ user, onLogout }) {
       setQuickAwardPoints((prev) => ({ ...prev, [employeeId]: '' }));
       loadData();
     } catch (error) {
-      alert('Error awarding points: ' + error.message);
+      alert('Error updating points: ' + error.message);
+    }
+  };
+
+  const handleRemoveUser = async (employeeId) => {
+    if (!confirm('Are you sure you want to remove this user? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('users')
+        .delete()
+        .eq('id', employeeId);
+
+      if (error) throw error;
+
+      alert('User removed successfully!');
+      loadData();
+    } catch (error) {
+      alert('Error removing user: ' + error.message);
     }
   };
 
@@ -123,6 +144,8 @@ export default function AdminDashboard({ user, onLogout }) {
     { label: '+25', value: 25, color: '#2196F3', icon: '✨' },
     { label: '+50', value: 50, color: '#FF9800', icon: '🌟' },
     { label: '+100', value: 100, color: '#E91E63', icon: '💎' },
+    { label: '-10', value: -10, color: '#F44336', icon: '⬇️' },
+    { label: '-25', value: -25, color: '#D32F2F', icon: '⬇️' },
   ];
 
   if (loading) {
@@ -279,7 +302,7 @@ export default function AdminDashboard({ user, onLogout }) {
                 <span style={styles.pointsText}>points</span>
               </div>
               <div style={styles.quickAwardSection}>
-                <p style={styles.quickAwardLabel}>Quick Award:</p>
+                <p style={styles.quickAwardLabel}>Manage Points:</p>
                 <div style={styles.quickAwardButtons}>
                   {quickAwardButtons.map((btn) => (
                     <button
@@ -289,7 +312,7 @@ export default function AdminDashboard({ user, onLogout }) {
                         ...styles.quickAwardBtn,
                         backgroundColor: btn.color,
                       }}
-                      title={`Award ${btn.value} points`}
+                      title={`${btn.value > 0 ? 'Add' : 'Remove'} ${Math.abs(btn.value)} points`}
                     >
                       {btn.icon} {btn.label}
                     </button>
@@ -305,23 +328,28 @@ export default function AdminDashboard({ user, onLogout }) {
                         [emp.id]: e.target.value,
                       }))
                     }
-                    placeholder="Custom"
-                    min="1"
+                    placeholder="Custom (+/-)"
                     style={styles.customInput}
                   />
                   <button
                     onClick={(e) =>
                       handleQuickAward(emp.id, quickAwardPoints[emp.id], e.currentTarget)
                     }
-                    disabled={!quickAwardPoints[emp.id] || quickAwardPoints[emp.id] <= 0}
+                    disabled={!quickAwardPoints[emp.id] || quickAwardPoints[emp.id] == 0}
                     style={{
                       ...styles.customAwardBtn,
-                      ...((!quickAwardPoints[emp.id] || quickAwardPoints[emp.id] <= 0) && styles.disabledBtn),
+                      ...((!quickAwardPoints[emp.id] || quickAwardPoints[emp.id] == 0) && styles.disabledBtn),
                     }}
                   >
-                    🎯 Award
+                    🎯 Update
                   </button>
                 </div>
+                <button
+                  onClick={() => handleRemoveUser(emp.id)}
+                  style={styles.removeUserBtn}
+                >
+                  🗑️ Remove User
+                </button>
               </div>
             </div>
           ))}
@@ -605,7 +633,7 @@ const styles = {
   },
   quickAwardButtons: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
+    gridTemplateColumns: 'repeat(3, 1fr)',
     gap: '8px',
     marginBottom: '12px',
   },
@@ -651,5 +679,19 @@ const styles = {
     background: '#CBD5E0',
     cursor: 'not-allowed',
     boxShadow: 'none',
+  },
+  removeUserBtn: {
+    marginTop: '12px',
+    padding: '10px',
+    background: 'linear-gradient(135deg, #EF5350 0%, #E53935 100%)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '10px',
+    fontSize: '13px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    boxShadow: '0 4px 12px rgba(239, 83, 80, 0.4)',
+    transition: 'all 0.3s ease',
+    width: '100%',
   },
 };
