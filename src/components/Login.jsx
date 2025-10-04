@@ -17,12 +17,6 @@ export default function Login({ onLogin }) {
 
     try {
       await onLogin(email, password, isSignUp, name);
-      if (isSignUp) {
-        setSuccess('Account created successfully! You can now sign in.');
-        setIsSignUp(false);
-        setName('');
-        setPassword('');
-      }
     } catch (err) {
       setError(err.message);
     } finally {
