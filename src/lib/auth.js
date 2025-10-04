@@ -5,6 +5,7 @@ export const signUp = async (email, password, name) => {
     email,
     password,
     options: {
+      emailRedirectTo: undefined,
       data: {
         name: name || email.split('@')[0],
       },
