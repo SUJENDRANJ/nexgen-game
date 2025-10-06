@@ -182,13 +182,13 @@ export default function LoginScreen() {
                     {user.fullName} (employee)
                   </button>
                 ))} */}
-              <button
+              {/* <button
                 onClick={() => quickLogin("admin@gmail.com", "admin@123")}
                 disabled={loading}
                 className="w-full px-4 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-xl text-white font-bold transition-all hover:scale-105 border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Admin Login
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
