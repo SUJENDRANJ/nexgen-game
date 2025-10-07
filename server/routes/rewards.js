@@ -107,6 +107,10 @@ router.post("/purchase/:rewardId", authMiddleware, async (req, res) => {
         level: user.level,
         rewardsPurchased: user.rewardsPurchased,
       },
+      reward: {
+        id: reward.id,
+        stock: reward.stock,
+      },
     });
 
     req.app.get("io").emit("redemptionCreated", {

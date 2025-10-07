@@ -234,7 +234,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    socket.on("rewardPurchased", async ({ userId, user }: any) => {
+    socket.on("rewardPurchased", async ({ userId, user, rewardId, reward }: any) => {
       setUsers((prev) =>
         prev.map((u) =>
           u.id === userId
@@ -245,6 +245,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
             : u
         )
       );
+
+      if (reward && rewardId) {
+        setRewards((prev) =>
+          prev.map((r) =>
+            r.id === rewardId
+              ? {
+                  ...r,
+                  stockQuantity: reward.stock !== undefined ? reward.stock : r.stockQuantity,
+                }
+              : r
+          )
+        );
+      }
 
       if (currentUser?.id === userId) {
         setCurrentUser((prev) =>
