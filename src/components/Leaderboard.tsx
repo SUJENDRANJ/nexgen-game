@@ -87,24 +87,24 @@ export default function Leaderboard() {
       </div>
 
       {currentUserRank && (
-        <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-6 text-white shadow-xl border-2 border-blue-400 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-4 sm:p-6 text-white shadow-xl border-2 border-blue-400 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-16 -mt-16"></div>
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full -ml-12 -mb-12"></div>
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <div className="bg-white/20 backdrop-blur-sm rounded-2xl w-20 h-20 flex items-center justify-center border-2 border-white/30">
-                <span className="text-4xl font-black">
+          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4 sm:gap-6">
+              <div className="bg-white/20 backdrop-blur-sm rounded-2xl w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center border-2 border-white/30">
+                <span className="text-2xl sm:text-4xl font-black">
                   #{currentUserRank.rank}
                 </span>
               </div>
               <div>
-                <p className="text-blue-100 text-sm font-bold uppercase tracking-wider">
+                <p className="text-blue-100 text-xs sm:text-sm font-bold uppercase tracking-wider">
                   Your Rank
                 </p>
-                <p className="text-2xl font-black mt-1">
+                <p className="text-lg sm:text-2xl font-black mt-1">
                   {currentUserRank.fullName}
                 </p>
-                <div className="flex items-center gap-4 mt-2">
+                <div className="flex items-center gap-2 sm:gap-4 mt-2">
                   <div className="flex items-center gap-1.5">
                     <Star className="w-4 h-4 text-yellow-300" />
                     <span className="text-sm font-semibold">
@@ -120,17 +120,17 @@ export default function Leaderboard() {
                 </div>
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-blue-100 text-sm font-bold uppercase tracking-wider">
+            <div className="text-center sm:text-right">
+              <p className="text-blue-100 text-xs sm:text-sm font-bold uppercase tracking-wider">
                 Total Earned
               </p>
-              <div className="flex items-center gap-2 justify-end mt-1">
-                <Trophy className="w-8 h-8 text-yellow-300" />
-                <p className="text-4xl font-black">
+              <div className="flex items-center gap-2 justify-center sm:justify-end mt-1">
+                <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-300" />
+                <p className="text-2xl sm:text-4xl font-black">
                   {currentUserRank.totalPointsEarned}
                 </p>
               </div>
-              <p className="text-blue-200 text-sm font-semibold mt-1">
+              <p className="text-blue-200 text-xs sm:text-sm font-semibold mt-1">
                 {currentUserRank.points} available
               </p>
             </div>
@@ -138,43 +138,43 @@ export default function Leaderboard() {
         </div>
       )}
 
-      <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl p-8 shadow-2xl">
-        <div className="flex items-center gap-3 mb-8">
-          <Sparkles className="w-7 h-7 text-yellow-600" />
-          <h3 className="text-2xl font-black text-slate-800">
+      <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl">
+        <div className="flex items-center gap-3 mb-6 sm:mb-8">
+          <Sparkles className="w-6 h-6 sm:w-7 sm:h-7 text-yellow-600" />
+          <h3 className="text-xl sm:text-2xl font-black text-slate-800">
             Top 3 Champions
           </h3>
         </div>
 
-        <div className="flex items-end justify-center gap-8 mb-12">
+        <div className="flex items-end justify-center gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
           {topThree.length >= 2 && (
             <div className="flex flex-col items-center">
               <div className="relative mb-4 group">
                 <div className="absolute inset-0 bg-slate-400 rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                <div className="relative bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 rounded-full p-6 shadow-xl border-4 border-white">
+                <div className="relative bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 rounded-full p-3 sm:p-4 lg:p-6 shadow-xl border-2 sm:border-4 border-white">
                   {getRankIcon(2)}
                 </div>
-                <div className="absolute -top-2 -right-2 bg-slate-700 text-white rounded-full w-10 h-10 flex items-center justify-center font-black text-lg shadow-lg">
+                <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-slate-700 text-white rounded-full w-7 h-7 sm:w-10 sm:h-10 flex items-center justify-center font-black text-sm sm:text-lg shadow-lg">
                   2
                 </div>
               </div>
               <div
                 className={`bg-gradient-to-b ${getPodiumGradient(
                   2
-                )} ${getPodiumHeight(
+                )} h-32 sm:h-44 lg:${getPodiumHeight(
                   2
-                )} w-40 rounded-t-3xl shadow-2xl flex flex-col items-center justify-start pt-6 px-4 border-t-4 border-white transition-all hover:scale-105`}
+                )} w-24 sm:w-32 lg:w-40 rounded-t-2xl sm:rounded-t-3xl shadow-2xl flex flex-col items-center justify-start pt-3 sm:pt-4 lg:pt-6 px-2 sm:px-3 lg:px-4 border-t-2 sm:border-t-4 border-white transition-all hover:scale-105`}
               >
-                <p className="text-white font-black text-lg text-center mb-2">
+                <p className="text-white font-black text-xs sm:text-sm lg:text-lg text-center mb-1 sm:mb-2">
                   {topThree[1]?.fullName}
                 </p>
-                <div className="flex items-center gap-1.5 mb-2">
-                  <Trophy className="w-5 h-5 text-white" />
-                  <p className="text-white font-black text-2xl">
+                <div className="flex items-center gap-1 sm:gap-1.5 mb-1 sm:mb-2">
+                  <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                  <p className="text-white font-black text-lg sm:text-xl lg:text-2xl">
                     {topThree[1]?.totalPointsEarned}
                   </p>
                 </div>
-                <p className="text-white/80 text-xs font-semibold">
+                <p className="text-white/80 text-[10px] sm:text-xs font-semibold">
                   Level {topThree[1]?.level}
                 </p>
               </div>
@@ -185,38 +185,38 @@ export default function Leaderboard() {
             <div className="flex flex-col items-center">
               <div className="relative mb-4 group">
                 <div className="absolute inset-0 bg-yellow-400 rounded-full blur-2xl opacity-60 group-hover:opacity-90 transition-opacity animate-pulse"></div>
-                <div className="relative bg-gradient-to-br from-yellow-300 via-yellow-400 to-amber-500 rounded-full p-8 shadow-2xl border-4 border-white">
+                <div className="relative bg-gradient-to-br from-yellow-300 via-yellow-400 to-amber-500 rounded-full p-4 sm:p-6 lg:p-8 shadow-2xl border-2 sm:border-4 border-white">
                   {getRankIcon(1)}
                 </div>
-                <div className="absolute -top-3 -right-3 bg-gradient-to-br from-yellow-500 to-orange-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-black text-xl shadow-xl border-2 border-white">
+                <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 bg-gradient-to-br from-yellow-500 to-orange-600 text-white rounded-full w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center font-black text-base sm:text-xl shadow-xl border-2 border-white">
                   1
                 </div>
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-yellow-500 text-slate-900 px-4 py-1 rounded-full text-xs font-black shadow-lg">
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-yellow-500 text-slate-900 px-2 sm:px-4 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-black shadow-lg">
                   CHAMPION
                 </div>
               </div>
               <div
                 className={`bg-gradient-to-b ${getPodiumGradient(
                   1
-                )} ${getPodiumHeight(
+                )} h-40 sm:h-52 lg:${getPodiumHeight(
                   1
-                )} w-44 rounded-t-3xl shadow-2xl flex flex-col items-center justify-start pt-6 px-4 border-t-4 border-white transition-all hover:scale-105`}
+                )} w-28 sm:w-36 lg:w-44 rounded-t-2xl sm:rounded-t-3xl shadow-2xl flex flex-col items-center justify-start pt-3 sm:pt-4 lg:pt-6 px-2 sm:px-3 lg:px-4 border-t-2 sm:border-t-4 border-white transition-all hover:scale-105`}
               >
-                <p className="text-white font-black text-xl text-center mb-3">
+                <p className="text-white font-black text-sm sm:text-base lg:text-xl text-center mb-2 sm:mb-3">
                   {topThree[0]?.fullName}
                 </p>
-                <div className="flex items-center gap-2 mb-2">
-                  <Trophy className="w-6 h-6 text-white" />
-                  <p className="text-white font-black text-3xl">
+                <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                  <Trophy className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" />
+                  <p className="text-white font-black text-xl sm:text-2xl lg:text-3xl">
                     {topThree[0]?.totalPointsEarned}
                   </p>
                 </div>
-                <p className="text-white/90 text-sm font-semibold">
+                <p className="text-white/90 text-xs sm:text-sm font-semibold">
                   Level {topThree[0]?.level}
                 </p>
-                <div className="flex items-center gap-1 mt-2">
-                  <Flame className="w-4 h-4 text-white" />
-                  <p className="text-white/80 text-xs font-bold">
+                <div className="flex items-center gap-1 mt-1 sm:mt-2">
+                  <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                  <p className="text-white/80 text-[10px] sm:text-xs font-bold">
                     {topThree[0]?.streakDays} days
                   </p>
                 </div>
@@ -228,30 +228,30 @@ export default function Leaderboard() {
             <div className="flex flex-col items-center">
               <div className="relative mb-4 group">
                 <div className="absolute inset-0 bg-amber-600 rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                <div className="relative bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 rounded-full p-5 shadow-xl border-4 border-white">
+                <div className="relative bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 rounded-full p-3 sm:p-4 lg:p-5 shadow-xl border-2 sm:border-4 border-white">
                   {getRankIcon(3)}
                 </div>
-                <div className="absolute -top-2 -right-2 bg-amber-800 text-white rounded-full w-10 h-10 flex items-center justify-center font-black text-lg shadow-lg">
+                <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-amber-800 text-white rounded-full w-7 h-7 sm:w-10 sm:h-10 flex items-center justify-center font-black text-sm sm:text-lg shadow-lg">
                   3
                 </div>
               </div>
               <div
                 className={`bg-gradient-to-b ${getPodiumGradient(
                   3
-                )} ${getPodiumHeight(
+                )} h-28 sm:h-36 lg:${getPodiumHeight(
                   3
-                )} w-40 rounded-t-3xl shadow-2xl flex flex-col items-center justify-start pt-6 px-4 border-t-4 border-white transition-all hover:scale-105`}
+                )} w-24 sm:w-32 lg:w-40 rounded-t-2xl sm:rounded-t-3xl shadow-2xl flex flex-col items-center justify-start pt-3 sm:pt-4 lg:pt-6 px-2 sm:px-3 lg:px-4 border-t-2 sm:border-t-4 border-white transition-all hover:scale-105`}
               >
-                <p className="text-white font-black text-lg text-center mb-2">
+                <p className="text-white font-black text-xs sm:text-sm lg:text-lg text-center mb-1 sm:mb-2">
                   {topThree[2]?.fullName}
                 </p>
-                <div className="flex items-center gap-1.5 mb-2">
-                  <Trophy className="w-5 h-5 text-white" />
-                  <p className="text-white font-black text-2xl">
+                <div className="flex items-center gap-1 sm:gap-1.5 mb-1 sm:mb-2">
+                  <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                  <p className="text-white font-black text-lg sm:text-xl lg:text-2xl">
                     {topThree[2]?.totalPointsEarned}
                   </p>
                 </div>
-                <p className="text-white/80 text-xs font-semibold">
+                <p className="text-white/80 text-[10px] sm:text-xs font-semibold">
                   Level {topThree[2]?.level}
                 </p>
               </div>
@@ -261,30 +261,30 @@ export default function Leaderboard() {
       </div>
 
       {restOfUsers.length > 0 && (
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-          <div className="bg-gradient-to-r from-slate-700 to-slate-800 px-8 py-6 border-b-4 border-slate-600">
-            <div className="flex items-center gap-3">
-              <Award className="w-6 h-6 text-yellow-400" />
-              <h3 className="text-2xl font-black text-white">
+        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden">
+          <div className="bg-gradient-to-r from-slate-700 to-slate-800 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 border-b-2 sm:border-b-4 border-slate-600">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Award className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400" />
+              <h3 className="text-lg sm:text-xl lg:text-2xl font-black text-white">
                 All Competitors
               </h3>
             </div>
           </div>
 
-          <div className="p-6">
-            <div className="space-y-3">
+          <div className="p-3 sm:p-4 lg:p-6">
+            <div className="space-y-2 sm:space-y-3">
               {restOfUsers.map((user) => (
                 <div
                   key={user.id}
-                  className={`flex items-center justify-between p-5 rounded-2xl transition-all hover:scale-[1.02] hover:shadow-lg ${
+                  className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl transition-all hover:scale-[1.02] hover:shadow-lg ${
                     user.id === currentUser?.id
                       ? "bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-blue-400 shadow-md"
                       : "bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 hover:border-slate-300"
                   }`}
                 >
-                  <div className="flex items-center gap-5 flex-1">
+                  <div className="flex items-center gap-3 sm:gap-4 lg:gap-5 flex-1 w-full">
                     <div
-                      className={`flex items-center justify-center w-14 h-14 rounded-xl font-black text-xl ${
+                      className={`flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl font-black text-lg sm:text-xl ${
                         user.id === currentUser?.id
                           ? "bg-blue-600 text-white"
                           : "bg-slate-200 text-slate-700"
@@ -293,10 +293,10 @@ export default function Leaderboard() {
                       #{user.rank}
                     </div>
 
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-1">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 sm:gap-3 mb-1">
                         <h4
-                          className={`text-lg font-black ${
+                          className={`text-base sm:text-lg font-black truncate ${
                             user.id === currentUser?.id
                               ? "text-blue-900"
                               : "text-slate-800"
@@ -305,27 +305,27 @@ export default function Leaderboard() {
                           {user.fullName}
                         </h4>
                         {user.id === currentUser?.id && (
-                          <span className="px-3 py-1 bg-blue-600 text-white text-xs font-black rounded-full shadow-sm">
+                          <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-blue-600 text-white text-[10px] sm:text-xs font-black rounded-full shadow-sm flex-shrink-0">
                             YOU
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1.5">
-                          <Star className="w-4 h-4 text-blue-600" />
-                          <span className="text-sm font-semibold text-slate-600">
+                      <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
+                        <div className="flex items-center gap-1">
+                          <Star className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                          <span className="text-xs sm:text-sm font-semibold text-slate-600">
                             Level {user.level}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1">
                           <Flame
-                            className={`w-4 h-4 ${
+                            className={`w-3 h-3 sm:w-4 sm:h-4 ${
                               user.streakDays > 0
                                 ? "text-orange-500"
                                 : "text-slate-400"
                             }`}
                           />
-                          <span className="text-sm font-semibold text-slate-600">
+                          <span className="text-xs sm:text-sm font-semibold text-slate-600">
                             {user.streakDays} days
                           </span>
                         </div>
@@ -333,11 +333,11 @@ export default function Leaderboard() {
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <div className="flex items-center gap-2 justify-end mb-1">
-                      <Trophy className="w-5 h-5 text-yellow-600" />
+                  <div className="text-right mt-2 sm:mt-0">
+                    <div className="flex items-center gap-1.5 sm:gap-2 justify-end mb-1">
+                      <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
                       <span
-                        className={`text-2xl font-black ${
+                        className={`text-xl sm:text-2xl font-black ${
                           user.id === currentUser?.id
                             ? "text-blue-900"
                             : "text-slate-800"
@@ -346,7 +346,7 @@ export default function Leaderboard() {
                         {user.totalPointsEarned}
                       </span>
                     </div>
-                    <p className="text-sm font-semibold text-slate-500">
+                    <p className="text-xs sm:text-sm font-semibold text-slate-500">
                       {user.points} available
                     </p>
                   </div>

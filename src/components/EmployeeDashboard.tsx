@@ -39,79 +39,79 @@ export default function EmployeeDashboard() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-6 shadow-xl border-b-4 border-blue-500">
-        <h1 className="text-4xl font-black text-white uppercase tracking-wide">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xl border-b-2 sm:border-b-4 border-blue-500">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white uppercase tracking-wide break-words">
           {currentUser.fullName}
         </h1>
-        <p className="text-slate-300 font-semibold mt-2">Dashboard</p>
+        <p className="text-slate-300 font-semibold mt-1 sm:mt-2 text-sm sm:text-base">Dashboard</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-6 text-white shadow-xl hover:scale-105 transition-transform">
-          <div className="flex items-center justify-between mb-4">
-            <Trophy className="w-8 h-8 opacity-80" />
-            <span className="text-3xl font-black">{currentUser.level}</span>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white shadow-xl hover:scale-105 transition-transform">
+          <div className="flex items-center justify-between mb-2 sm:mb-4">
+            <Trophy className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
+            <span className="text-2xl sm:text-3xl font-black">{currentUser.level}</span>
           </div>
-          <p className="text-blue-100 font-semibold text-sm">Current Level</p>
+          <p className="text-blue-100 font-semibold text-xs sm:text-sm">Current Level</p>
         </div>
 
-        <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl p-6 text-white shadow-xl hover:scale-105 transition-transform">
-          <div className="flex items-center justify-between mb-4">
-            <Star className="w-8 h-8 opacity-80" />
-            <span className="text-3xl font-black">{currentUser.points}</span>
+        <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white shadow-xl hover:scale-105 transition-transform">
+          <div className="flex items-center justify-between mb-2 sm:mb-4">
+            <Star className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
+            <span className="text-2xl sm:text-3xl font-black">{currentUser.points}</span>
           </div>
-          <p className="text-orange-100 font-semibold text-sm">
+          <p className="text-orange-100 font-semibold text-xs sm:text-sm">
             Available Points
           </p>
         </div>
 
-        <div className="bg-gradient-to-br from-green-500 to-emerald-700 rounded-2xl p-6 text-white shadow-xl hover:scale-105 transition-transform">
-          <div className="flex items-center justify-between mb-4">
-            <TrendingUp className="w-8 h-8 opacity-80" />
-            <span className="text-3xl font-black">
+        <div className="bg-gradient-to-br from-green-500 to-emerald-700 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white shadow-xl hover:scale-105 transition-transform">
+          <div className="flex items-center justify-between mb-2 sm:mb-4">
+            <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
+            <span className="text-2xl sm:text-3xl font-black">
               {currentUser.totalPointsEarned}
             </span>
           </div>
-          <p className="text-green-100 font-semibold text-sm">Total Earned</p>
+          <p className="text-green-100 font-semibold text-xs sm:text-sm">Total Earned</p>
         </div>
 
-        <div className="bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl p-6 text-white shadow-xl hover:scale-105 transition-transform">
-          <div className="flex items-center justify-between mb-4">
-            <Flame className="w-8 h-8 opacity-80" />
-            <span className="text-3xl font-black">
+        <div className="bg-gradient-to-br from-red-500 to-pink-600 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white shadow-xl hover:scale-105 transition-transform">
+          <div className="flex items-center justify-between mb-2 sm:mb-4">
+            <Flame className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
+            <span className="text-2xl sm:text-3xl font-black">
               {currentUser.streakDays}
             </span>
           </div>
-          <p className="text-pink-100 font-semibold text-sm">Day Streak</p>
+          <p className="text-pink-100 font-semibold text-xs sm:text-sm">Day Streak</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl p-6 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold text-gray-800">Level Progress</h3>
-          <span className="text-sm font-semibold text-gray-500">
+      <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 sm:mb-4 gap-2">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-800">Level Progress</h3>
+          <span className="text-xs sm:text-sm font-semibold text-gray-500">
             Level {currentUser.level} → {currentUser.level + 1}
           </span>
         </div>
-        <div className="relative h-8 bg-gray-200 rounded-full overflow-hidden">
+        <div className="relative h-6 sm:h-8 bg-gray-200 rounded-full overflow-hidden">
           <div
-            className="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full transition-all duration-1000 ease-out flex items-center justify-end pr-4"
+            className="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full transition-all duration-1000 ease-out flex items-center justify-end pr-2 sm:pr-4"
             style={{ width: `${progressPercentage}%` }}
           >
             {progressPercentage > 20 && (
-              <span className="text-white font-bold text-sm">
+              <span className="text-white font-bold text-xs sm:text-sm">
                 {currentLevelProgress}/{100} XP
               </span>
             )}
           </div>
         </div>
-        <p className="text-sm text-gray-600 mt-2">
+        <p className="text-xs sm:text-sm text-gray-600 mt-2">
           {100 - currentLevelProgress} points until next level!
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 sm:gap-6">
         {/* <div className="bg-white rounded-2xl p-6 shadow-lg">
           <div className="flex items-center gap-2 mb-4">
             <Award className="w-6 h-6 text-purple-600" />
@@ -156,36 +156,36 @@ export default function EmployeeDashboard() {
           )}
         </div> */}
 
-        <div className="bg-white rounded-2xl p-6 shadow-lg">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-6 h-6 text-green-600" />
-            <h3 className="text-xl font-bold text-gray-800">Recent Activity</h3>
+        <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg">
+          <div className="flex items-center gap-2 mb-3 sm:mb-4">
+            <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800">Recent Activity</h3>
           </div>
           {recentTransactions.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">
+            <p className="text-gray-500 text-center py-6 sm:py-8 text-sm sm:text-base">
               No recent activity. Start earning points!
             </p>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {recentTransactions.map((transaction, index) => (
                 <div
                   key={transaction._id || index}
-                  className={`flex items-center justify-between p-4 rounded-xl border ${
+                  className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-lg sm:rounded-xl border gap-2 sm:gap-0 ${
                     transaction.amount >= 0
                       ? "bg-gradient-to-r from-green-50 to-emerald-50 border-green-200"
                       : "bg-gradient-to-r from-red-50 to-pink-50 border-red-200"
                   }`}
                 >
-                  <div>
-                    <p className="font-semibold text-gray-800">
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-800 text-sm sm:text-base">
                       {transaction.description}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-[10px] sm:text-xs text-gray-500">
                       {new Date(transaction.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                   <span
-                    className={`text-xl font-bold ${
+                    className={`text-lg sm:text-xl font-bold self-end sm:self-center ${
                       transaction.amount >= 0
                         ? "text-green-600"
                         : "text-red-600"
